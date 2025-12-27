@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#3DDC84</color>
+    
+    <!-- Design System Colors -->
+    <color name="slate_900">#0F172A</color>
+    <color name="slate_800">#1E293B</color>
+    <color name="purple_900">#581C87</color>
+    <color name="purple_500">#A855F7</color>
+    <color name="purple_300">#D8B4FE</color>
+    <color name="pink_500">#EC4899</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray_300">#D1D5DB</color>
+    <color name="yellow_400">#FACC15</color>
+    <color name="yellow_500">#EAB308</color>
+    <color name="red_500">#EF4444</color>
+    <color name="green_500">#22C55E</color>
+    
+    <!-- Semantic Colors -->
+    <color name="colorPrimary">@color/purple_500</color>
+    <color name="colorSecondary">@color/pink_500</color>
+    <color name="colorBackground">@color/slate_900</color>
+    <color name="colorSurface">@color/slate_800</color>
+    <color name="textPrimary">@color/white</color>
+    <color name="textSecondary">@color/gray_300</color>
+</resources>
