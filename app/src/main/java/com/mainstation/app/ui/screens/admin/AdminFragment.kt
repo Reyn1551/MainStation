@@ -98,6 +98,13 @@ class AdminFragment : Fragment() {
             rvConsoles.visibility = if (selected == "consoles") View.VISIBLE else View.GONE
             rvRooms.visibility = if (selected == "rooms") View.VISIBLE else View.GONE
             
+            // Fix: Hide FAB on bookings tab
+            if (selected == "bookings") {
+                fabAdd.hide()
+            } else {
+                fabAdd.show()
+            }
+            
             // Highlight (correctly using tint for MaterialButton)
             val purple = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#A855F7"))
             
@@ -153,11 +160,11 @@ class AdminFragment : Fragment() {
             val price = etPrice.text.toString().toDoubleOrNull()
             val stock = etStock.text.toString().toIntOrNull() ?: 5 // Default 5
             
-            if (name.isNotEmpty() && price != null) {
+            if (name.isNotEmpty() && price != null && price >= 0 && stock >= 0) {
                 viewModel.addConsole(name, type.ifEmpty { "PS5" }, price, stock)
                 dialog.dismiss()
             } else {
-                Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Invalid input: Name required, Price/Stock must be positive", Toast.LENGTH_SHORT).show()
             }
         }
         dialog.show()
@@ -184,12 +191,12 @@ class AdminFragment : Fragment() {
             val price = etPrice.text.toString().toDoubleOrNull()
             val stock = etStock.text.toString().toIntOrNull() ?: console.stock
 
-            if (name.isNotEmpty() && price != null) {
+            if (name.isNotEmpty() && price != null && price >= 0 && stock >= 0) {
                 val updatedConsole = console.copy(name = name, type = type, pricePerHour = price, stock = stock)
                 viewModel.updateConsole(updatedConsole)
                 dialog.dismiss()
             } else {
-                Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Invalid input: Name required, Price/Stock must be positive", Toast.LENGTH_SHORT).show()
             }
         }
         dialog.show()
@@ -211,11 +218,11 @@ class AdminFragment : Fragment() {
             val cap = etCap.text.toString().toIntOrNull() ?: 0
             val price = etPrice.text.toString().toDoubleOrNull()
             
-            if (name.isNotEmpty() && price != null) {
+            if (name.isNotEmpty() && price != null && price >= 0 && cap >= 0) {
                 viewModel.addRoom(name, cap, price, desc)
                 dialog.dismiss()
             } else {
-                Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Invalid input: Name required, Price/Capacity must be positive", Toast.LENGTH_SHORT).show()
             }
         }
         dialog.show()
@@ -242,12 +249,12 @@ class AdminFragment : Fragment() {
             val cap = etCap.text.toString().toIntOrNull() ?: 0
             val price = etPrice.text.toString().toDoubleOrNull()
 
-            if (name.isNotEmpty() && price != null) {
+            if (name.isNotEmpty() && price != null && price >= 0 && cap >= 0) {
                 val updatedRoom = room.copy(name = name, description = desc, capacity = cap, pricePerHour = price)
                 viewModel.updateRoom(updatedRoom)
                 dialog.dismiss()
             } else {
-                Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Invalid input: Name required, Price/Capacity must be positive", Toast.LENGTH_SHORT).show()
             }
         }
         dialog.show()
