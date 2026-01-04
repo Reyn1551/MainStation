@@ -17,7 +17,7 @@ import com.mainstation.app.data.model.Booking
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Date
-import java.util.UUID
+import com.mainstation.app.databinding.FragmentBookingBinding
 
 @AndroidEntryPoint
 class BookingFragment : Fragment() {
@@ -26,12 +26,21 @@ class BookingFragment : Fragment() {
     private var duration: Int = 2
     private val viewModel: BookingViewModel by viewModels()
 
+    private var _binding: FragmentBookingBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_booking, container, false)
+    ): View {
+        _binding = FragmentBookingBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,32 +50,25 @@ class BookingFragment : Fragment() {
         val itemName = arguments?.getString("itemName") ?: "Select Duration"
         hourlyRate = arguments?.getDouble("hourlyRate") ?: 50000.0
 
-        val tvItemName = view.findViewById<TextView>(R.id.tv_selected_item_name)
-        val tvTotalPrice = view.findViewById<TextView>(R.id.tv_total_price)
-        val sliderDuration = view.findViewById<Slider>(R.id.slider_duration)
-        val tvDurationDisplay = view.findViewById<TextView>(R.id.tv_duration_display)
-        val btnConfirm = view.findViewById<AppCompatButton>(R.id.btn_confirm_booking)
-        val spinnerBranch = view.findViewById<android.widget.Spinner>(R.id.spinner_branch)
-
-        tvItemName.text = itemName
+        binding.tvSelectedItemName.text = itemName
 
         // Branch Setup
         val branches = listOf("Yogyakarta", "Bantul", "Sleman", "Gunung Kidul")
         val adapter = android.widget.ArrayAdapter(requireContext(), R.layout.item_spinner_white, branches)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerBranch.adapter = adapter
+        binding.spinnerBranch.adapter = adapter
 
         // Init UI
-        updateTotal(tvTotalPrice)
+        updateTotal()
 
-        sliderDuration.addOnChangeListener { _, value, _ ->
+        binding.sliderDuration.addOnChangeListener { _, value, _ ->
             duration = value.toInt()
-            tvDurationDisplay.text = "$duration Hours"
-            updateTotal(tvTotalPrice)
+            binding.tvDurationDisplay.text = "$duration Hours"
+            updateTotal()
         }
 
-        btnConfirm.setOnClickListener {
-            val selectedBranch = spinnerBranch.selectedItem.toString()
+        binding.btnConfirmBooking.setOnClickListener {
+            val selectedBranch = binding.spinnerBranch.selectedItem.toString()
             
             // Retrieve IDs
             val selectedRoomId = arguments?.getString("roomId") 
@@ -116,8 +118,8 @@ class BookingFragment : Fragment() {
         }
     }
 
-    private fun updateTotal(tvTotal: TextView) {
+    private fun updateTotal() {
         val total = duration * hourlyRate
-        tvTotal.text = "Rp ${java.text.NumberFormat.getIntegerInstance().format(total)}"
+        binding.tvTotalPrice.text = "Rp ${java.text.NumberFormat.getIntegerInstance().format(total)}"
     }
 }

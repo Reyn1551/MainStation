@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mainstation.app.R
 import dagger.hilt.android.AndroidEntryPoint
+import com.mainstation.app.databinding.FragmentCatalogBinding
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -19,20 +20,28 @@ class CatalogFragment : Fragment() {
 
     private val viewModel: CatalogViewModel by viewModels()
     private lateinit var adapter: ConsoleAdapter
+    
+    private var _binding: FragmentCatalogBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_catalog, container, false)
+    ): View {
+        _binding = FragmentCatalogBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_consoles)
-        recyclerView.layoutManager = GridLayoutManager(context, 2)
+        binding.rvConsoles.layoutManager = GridLayoutManager(context, 2)
         
         adapter = ConsoleAdapter(emptyList()) { console ->
             val bundle = Bundle().apply {
@@ -42,7 +51,7 @@ class CatalogFragment : Fragment() {
             }
             findNavController().navigate(R.id.action_catalog_to_booking, bundle)
         }
-        recyclerView.adapter = adapter
+        binding.rvConsoles.adapter = adapter
         
         viewLifecycleOwner.lifecycleScope.launch {
              viewModel.consoles.collect { consoles ->

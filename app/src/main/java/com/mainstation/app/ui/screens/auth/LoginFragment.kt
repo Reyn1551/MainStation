@@ -13,31 +13,37 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.mainstation.app.R
 import dagger.hilt.android.AndroidEntryPoint
+import com.mainstation.app.databinding.FragmentLoginBinding
+import com.mainstation.app.databinding.BottomSheetRegisterBinding
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private val viewModel: AuthViewModel by viewModels()
+    private var _binding: FragmentLoginBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_login, container, false)
+    ): View {
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val emailInput = view.findViewById<EditText>(R.id.et_email)
-        val passwordInput = view.findViewById<EditText>(R.id.et_password)
-        val loginButton = view.findViewById<Button>(R.id.btn_login)
-
-        loginButton.setOnClickListener {
-            val email = emailInput.text.toString().trim()
-            val password = passwordInput.text.toString()
+        binding.btnLogin.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString()
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 viewModel.login(email, password)
             } else {
@@ -45,15 +51,13 @@ class LoginFragment : Fragment() {
             }
         }
         
-        val tvSignUp = view.findViewById<android.widget.TextView>(R.id.tv_signup)
-        
         // Make "Sign Up" colored
         val spannable = android.text.SpannableString("Don't have an account? Sign Up")
         val colorSpan = android.text.style.ForegroundColorSpan(android.graphics.Color.parseColor("#EC4899")) // Pink-500
         spannable.setSpan(colorSpan, 23, 30, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        tvSignUp.text = spannable
+        binding.tvSignup.text = spannable
         
-        tvSignUp.setOnClickListener {
+        binding.tvSignup.setOnClickListener {
             showRegisterBottomSheet()
         }
 
@@ -79,21 +83,16 @@ class LoginFragment : Fragment() {
     
     private fun showRegisterBottomSheet() {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
-        val view = layoutInflater.inflate(R.layout.bottom_sheet_register, null)
-        dialog.setContentView(view)
+        val sheetBinding = com.mainstation.app.databinding.BottomSheetRegisterBinding.inflate(layoutInflater)
+        dialog.setContentView(sheetBinding.root)
         
         // Transparent background for rounded corners
-        (view.parent as? View)?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        (sheetBinding.root.parent as? View)?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         
-        val nameInput = view.findViewById<EditText>(R.id.et_reg_name)
-        val emailInput = view.findViewById<EditText>(R.id.et_reg_email)
-        val passwordInput = view.findViewById<EditText>(R.id.et_reg_password)
-        val btnRegister = view.findViewById<Button>(R.id.btn_register)
-        
-        btnRegister.setOnClickListener {
-            val name = nameInput.text.toString()
-            val email = emailInput.text.toString()
-            val password = passwordInput.text.toString()
+        sheetBinding.btnRegister.setOnClickListener {
+            val name = sheetBinding.etRegName.text.toString()
+            val email = sheetBinding.etRegEmail.text.toString()
+            val password = sheetBinding.etRegPassword.text.toString()
             
             if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
                 // Call Register in ViewModel

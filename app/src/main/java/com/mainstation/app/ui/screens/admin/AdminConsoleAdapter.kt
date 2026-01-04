@@ -8,33 +8,28 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mainstation.app.R
 import com.mainstation.app.data.model.Console
 
+import com.mainstation.app.databinding.ItemAdminConsoleBinding
+
 class AdminConsoleAdapter(
     private var consoles: List<Console>,
     private val onEdit: (Console) -> Unit,
     private val onDelete: (String) -> Unit
 ) : RecyclerView.Adapter<AdminConsoleAdapter.ConsoleViewHolder>() {
 
-    class ConsoleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvName: TextView = itemView.findViewById(R.id.tv_name)
-        val tvDetails: TextView = itemView.findViewById(R.id.tv_details)
-        val tvStock: TextView = itemView.findViewById(R.id.tv_stock)
-        val btnEdit: View = itemView.findViewById(R.id.btn_edit)
-        val btnDelete: View = itemView.findViewById(R.id.btn_delete)
-    }
+    class ConsoleViewHolder(val binding: ItemAdminConsoleBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConsoleViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_admin_console, parent, false)
-        return ConsoleViewHolder(view)
+        val binding = ItemAdminConsoleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ConsoleViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ConsoleViewHolder, position: Int) {
         val console = consoles[position]
-        holder.tvName.text = console.name
-        holder.tvDetails.text = "${console.type} | ${com.mainstation.app.util.CurrencyUtils.toRupiah(console.pricePerHour)}/hr"
-        holder.tvStock.text = "Stock: ${console.stock}"
-        holder.btnEdit.setOnClickListener { onEdit(console) }
-        holder.btnDelete.setOnClickListener { onDelete(console.id) }
+        holder.binding.tvName.text = console.name
+        holder.binding.tvDetails.text = "${console.type} | ${com.mainstation.app.util.CurrencyUtils.toRupiah(console.pricePerHour)}/hr"
+        holder.binding.tvStock.text = "Stock: ${console.stock}"
+        holder.binding.btnEdit.setOnClickListener { onEdit(console) }
+        holder.binding.btnDelete.setOnClickListener { onDelete(console.id) }
     }
 
     override fun getItemCount() = consoles.size

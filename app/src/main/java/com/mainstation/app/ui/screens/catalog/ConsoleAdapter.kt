@@ -10,52 +10,45 @@ import com.mainstation.app.R
 import com.mainstation.app.data.model.Console
 import com.mainstation.app.util.CurrencyUtils
 
+import com.mainstation.app.databinding.ItemConsoleBinding
+
 class ConsoleAdapter(
     private var consoles: List<Console>,
     private val onConsoleClick: (Console) -> Unit = {}
 ) : RecyclerView.Adapter<ConsoleAdapter.ConsoleViewHolder>() {
 
-    class ConsoleViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val name: TextView = view.findViewById(R.id.tv_console_name)
-        val type: TextView = view.findViewById(R.id.tv_console_type)
-        val price: TextView = view.findViewById(R.id.tv_price)
-        val stock: TextView = view.findViewById(R.id.tv_stock)
-        val status: TextView = view.findViewById(R.id.tv_status)
-        val image: ImageView = view.findViewById(R.id.iv_console)
-        val btnBook: View = view.findViewById(R.id.btn_book)
-    }
+    class ConsoleViewHolder(val binding: ItemConsoleBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConsoleViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_console, parent, false)
-        return ConsoleViewHolder(view)
+        val binding = ItemConsoleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ConsoleViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ConsoleViewHolder, position: Int) {
         val console = consoles[position]
-        holder.name.text = console.name
-        holder.type.text = console.type
-        holder.price.text = "${CurrencyUtils.toRupiah(console.pricePerHour)}/hr"
-        holder.stock.text = "Stock: ${console.stock}"
-        holder.status.text = if(console.stock > 0) "Available" else "Out of Stock"
-        holder.status.setTextColor(if(console.stock > 0) android.graphics.Color.parseColor("#3DDC84") else android.graphics.Color.RED)
+        holder.binding.tvConsoleName.text = console.name
+        holder.binding.tvConsoleType.text = console.type
+        holder.binding.tvPrice.text = "${CurrencyUtils.toRupiah(console.pricePerHour)}/hr"
+        holder.binding.tvStock.text = "Stock: ${console.stock}"
+        holder.binding.tvStatus.text = if(console.stock > 0) "Available" else "Out of Stock"
+        holder.binding.tvStatus.setTextColor(if(console.stock > 0) android.graphics.Color.parseColor("#3DDC84") else android.graphics.Color.RED)
         
         // Setup image placeholders
-        holder.image.setImageResource(R.drawable.bg_card) 
-        holder.image.setColorFilter(android.graphics.Color.parseColor("#581C87")) 
+        holder.binding.ivConsole.setImageResource(R.drawable.bg_card) 
+        holder.binding.ivConsole.setColorFilter(android.graphics.Color.parseColor("#581C87")) 
         
         if (console.stock > 0) {
             holder.itemView.setOnClickListener { onConsoleClick(console) }
-            holder.btnBook.isEnabled = true
-            holder.btnBook.alpha = 1.0f
-            (holder.btnBook as android.widget.TextView).text = "Book Now"
-            holder.btnBook.setOnClickListener { onConsoleClick(console) }
+            holder.binding.btnBook.isEnabled = true
+            holder.binding.btnBook.alpha = 1.0f
+            (holder.binding.btnBook as android.widget.TextView).text = "Book Now"
+            holder.binding.btnBook.setOnClickListener { onConsoleClick(console) }
         } else {
             holder.itemView.setOnClickListener { /* No Op */ }
-            holder.btnBook.isEnabled = false
-            holder.btnBook.alpha = 0.5f
-            (holder.btnBook as android.widget.TextView).text = "Out of Stock"
-            holder.btnBook.setOnClickListener { /* No Op */ }
+            holder.binding.btnBook.isEnabled = false
+            holder.binding.btnBook.alpha = 0.5f
+            (holder.binding.btnBook as android.widget.TextView).text = "Out of Stock"
+            holder.binding.btnBook.setOnClickListener { /* No Op */ }
         }
     }
 

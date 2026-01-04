@@ -15,6 +15,9 @@ import com.mainstation.app.R
 import com.mainstation.app.data.model.Console
 import com.mainstation.app.data.model.Room
 import dagger.hilt.android.AndroidEntryPoint
+import com.mainstation.app.databinding.FragmentAdminBinding
+import com.mainstation.app.databinding.DialogAddConsoleBinding
+import com.mainstation.app.databinding.DialogAddRoomBinding
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -25,47 +28,53 @@ class AdminFragment : Fragment() {
     private lateinit var consoleAdapter: AdminConsoleAdapter
     private lateinit var roomAdapter: AdminRoomAdapter
     private var currentTab = "bookings" // bookings, consoles, rooms
+    
+    private var _binding: FragmentAdminBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_admin, container, false)
+    ): View {
+        _binding = FragmentAdminBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Bookings Setup
-        val rvBookings = view.findViewById<RecyclerView>(R.id.rv_admin_bookings)
-        rvBookings.layoutManager = LinearLayoutManager(context)
+        binding.rvAdminBookings.layoutManager = LinearLayoutManager(context)
         bookingAdapter = AdminBookingAdapter(
             bookings = emptyList(),
             onApprove = { id -> viewModel.approveBooking(id) },
             onReject = { id -> viewModel.rejectBooking(id) }
         )
-        rvBookings.adapter = bookingAdapter
+        binding.rvAdminBookings.adapter = bookingAdapter
 
         // Consoles Setup
-        val rvConsoles = view.findViewById<RecyclerView>(R.id.rv_admin_consoles)
-        rvConsoles.layoutManager = LinearLayoutManager(context)
+        binding.rvAdminConsoles.layoutManager = LinearLayoutManager(context)
         consoleAdapter = AdminConsoleAdapter(
             consoles = emptyList(),
             onEdit = { console -> showEditConsoleDialog(console) },
             onDelete = { id -> viewModel.deleteConsole(id) }
         )
-        rvConsoles.adapter = consoleAdapter
+        binding.rvAdminConsoles.adapter = consoleAdapter
 
         // Rooms Setup
-        val rvRooms = view.findViewById<RecyclerView>(R.id.rv_admin_rooms)
-        rvRooms.layoutManager = LinearLayoutManager(context)
+        binding.rvAdminRooms.layoutManager = LinearLayoutManager(context)
         roomAdapter = AdminRoomAdapter(
             rooms = emptyList(),
             onEdit = { room -> showEditRoomDialog(room) },
             onDelete = { id -> viewModel.deleteRoom(id) }
         )
-        rvRooms.adapter = roomAdapter
+        binding.rvAdminRooms.adapter = roomAdapter
 
         // Observers
         viewLifecycleOwner.lifecycleScope.launch {
@@ -86,57 +95,51 @@ class AdminFragment : Fragment() {
             }
         }
 
-        // UI Controls
-        val fabAdd = view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fab_add)
-        val tabBookings = view.findViewById<View>(R.id.tab_bookings)
-        val tabConsoles = view.findViewById<View>(R.id.tab_consoles)
-        val tabRooms = view.findViewById<View>(R.id.tab_rooms)
-
         fun updateTabs(selected: String) {
             currentTab = selected
-            rvBookings.visibility = if (selected == "bookings") View.VISIBLE else View.GONE
-            rvConsoles.visibility = if (selected == "consoles") View.VISIBLE else View.GONE
-            rvRooms.visibility = if (selected == "rooms") View.VISIBLE else View.GONE
+            binding.rvAdminBookings.visibility = if (selected == "bookings") View.VISIBLE else View.GONE
+            binding.rvAdminConsoles.visibility = if (selected == "consoles") View.VISIBLE else View.GONE
+            binding.rvAdminRooms.visibility = if (selected == "rooms") View.VISIBLE else View.GONE
             
             // Fix: Hide FAB on bookings tab
             if (selected == "bookings") {
-                fabAdd.hide()
+                binding.fabAdd.hide()
             } else {
-                fabAdd.show()
+                binding.fabAdd.show()
             }
             
             // Highlight (correctly using tint for MaterialButton)
             val purple = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#A855F7"))
             
             // Unselected = null (reverts to default TextButton style which is transparent)
-            tabBookings.backgroundTintList = if (selected == "bookings") purple else null
-            tabConsoles.backgroundTintList = if (selected == "consoles") purple else null
-            tabRooms.backgroundTintList = if (selected == "rooms") purple else null
+            binding.tabBookings.backgroundTintList = if (selected == "bookings") purple else null
+            binding.tabConsoles.backgroundTintList = if (selected == "consoles") purple else null
+            binding.tabRooms.backgroundTintList = if (selected == "rooms") purple else null
 
             // Text Colors - update for visual consistency
             val white = android.graphics.Color.WHITE
             val gray = android.graphics.Color.parseColor("#CBD5E1") // slate-300
             
-            (tabBookings as android.widget.Button).setTextColor(if (selected == "bookings") white else gray)
-            (tabConsoles as android.widget.Button).setTextColor(if (selected == "consoles") white else gray)
-            (tabRooms as android.widget.Button).setTextColor(if (selected == "rooms") white else gray)
+            binding.tabBookings.setTextColor(if (selected == "bookings") white else gray)
+            binding.tabConsoles.setTextColor(if (selected == "consoles") white else gray)
+            binding.tabRooms.setTextColor(if (selected == "rooms") white else gray)
         }
 
-        tabBookings.setOnClickListener { updateTabs("bookings") }
-        tabConsoles.setOnClickListener { updateTabs("consoles") }
-        tabRooms.setOnClickListener { updateTabs("rooms") }
+        binding.tabBookings.setOnClickListener { updateTabs("bookings") }
+        binding.tabConsoles.setOnClickListener { updateTabs("consoles") }
+        binding.tabRooms.setOnClickListener { updateTabs("rooms") }
         
-        fabAdd.setOnClickListener {
+        binding.fabAdd.setOnClickListener {
             if (currentTab == "consoles") showAddConsoleDialog()
             else if (currentTab == "rooms") showAddRoomDialog()
         }
         
-        view.findViewById<View>(R.id.btn_seed).setOnClickListener {
+        binding.btnSeed.setOnClickListener {
             viewModel.seedData()
             Toast.makeText(context, "Data Reset & Stock Updated!", Toast.LENGTH_SHORT).show()
         }
         
-        view.findViewById<View>(R.id.btn_logout).setOnClickListener {
+        binding.btnLogout.setOnClickListener {
              findNavController().navigate(R.id.login_fragment)
         }
         
@@ -146,19 +149,14 @@ class AdminFragment : Fragment() {
     
     private fun showAddConsoleDialog() {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_add_console, null)
-        dialog.setContentView(view)
+        val sheetBinding = com.mainstation.app.databinding.DialogAddConsoleBinding.inflate(layoutInflater)
+        dialog.setContentView(sheetBinding.root)
         
-        val etName = view.findViewById<android.widget.EditText>(R.id.et_name)
-        val etType = view.findViewById<android.widget.EditText>(R.id.et_type)
-        val etPrice = view.findViewById<android.widget.EditText>(R.id.et_price)
-        val etStock = view.findViewById<android.widget.EditText>(R.id.et_stock)
-        
-        view.findViewById<View>(R.id.btn_save).setOnClickListener {
-            val name = etName.text.toString()
-            val type = etType.text.toString() 
-            val price = etPrice.text.toString().toDoubleOrNull()
-            val stock = etStock.text.toString().toIntOrNull() ?: 5 // Default 5
+        sheetBinding.btnSave.setOnClickListener {
+            val name = sheetBinding.etName.text.toString()
+            val type = sheetBinding.etType.text.toString() 
+            val price = sheetBinding.etPrice.text.toString().toDoubleOrNull()
+            val stock = sheetBinding.etStock.text.toString().toIntOrNull() ?: 5 // Default 5
             
             if (name.isNotEmpty() && price != null && price >= 0 && stock >= 0) {
                 viewModel.addConsole(name, type.ifEmpty { "PS5" }, price, stock)
@@ -172,24 +170,19 @@ class AdminFragment : Fragment() {
 
     private fun showEditConsoleDialog(console: Console) {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_add_console, null)
-        dialog.setContentView(view)
+        val sheetBinding = com.mainstation.app.databinding.DialogAddConsoleBinding.inflate(layoutInflater)
+        dialog.setContentView(sheetBinding.root)
 
-        val etName = view.findViewById<android.widget.EditText>(R.id.et_name)
-        val etType = view.findViewById<android.widget.EditText>(R.id.et_type)
-        val etPrice = view.findViewById<android.widget.EditText>(R.id.et_price)
-        val etStock = view.findViewById<android.widget.EditText>(R.id.et_stock)
+        sheetBinding.etName.setText(console.name)
+        sheetBinding.etType.setText(console.type)
+        sheetBinding.etPrice.setText(console.pricePerHour.toString())
+        sheetBinding.etStock.setText(console.stock.toString())
 
-        etName.setText(console.name)
-        etType.setText(console.type)
-        etPrice.setText(console.pricePerHour.toString())
-        etStock.setText(console.stock.toString())
-
-        view.findViewById<View>(R.id.btn_save).setOnClickListener {
-            val name = etName.text.toString()
-            val type = etType.text.toString()
-            val price = etPrice.text.toString().toDoubleOrNull()
-            val stock = etStock.text.toString().toIntOrNull() ?: console.stock
+        sheetBinding.btnSave.setOnClickListener {
+            val name = sheetBinding.etName.text.toString()
+            val type = sheetBinding.etType.text.toString()
+            val price = sheetBinding.etPrice.text.toString().toDoubleOrNull()
+            val stock = sheetBinding.etStock.text.toString().toIntOrNull() ?: console.stock
 
             if (name.isNotEmpty() && price != null && price >= 0 && stock >= 0) {
                 val updatedConsole = console.copy(name = name, type = type, pricePerHour = price, stock = stock)
@@ -204,19 +197,14 @@ class AdminFragment : Fragment() {
     
     private fun showAddRoomDialog() {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_add_room, null)
-        dialog.setContentView(view)
+        val sheetBinding = com.mainstation.app.databinding.DialogAddRoomBinding.inflate(layoutInflater)
+        dialog.setContentView(sheetBinding.root)
         
-        val etName = view.findViewById<android.widget.EditText>(R.id.et_name)
-        val etDesc = view.findViewById<android.widget.EditText>(R.id.et_desc)
-        val etCap = view.findViewById<android.widget.EditText>(R.id.et_capacity)
-        val etPrice = view.findViewById<android.widget.EditText>(R.id.et_price)
-        
-        view.findViewById<View>(R.id.btn_save).setOnClickListener {
-            val name = etName.text.toString()
-            val desc = etDesc.text.toString()
-            val cap = etCap.text.toString().toIntOrNull() ?: 0
-            val price = etPrice.text.toString().toDoubleOrNull()
+        sheetBinding.btnSave.setOnClickListener {
+            val name = sheetBinding.etName.text.toString()
+            val desc = sheetBinding.etDesc.text.toString()
+            val cap = sheetBinding.etCapacity.text.toString().toIntOrNull() ?: 0
+            val price = sheetBinding.etPrice.text.toString().toDoubleOrNull()
             
             if (name.isNotEmpty() && price != null && price >= 0 && cap >= 0) {
                 viewModel.addRoom(name, cap, price, desc)
@@ -230,24 +218,19 @@ class AdminFragment : Fragment() {
 
     private fun showEditRoomDialog(room: Room) {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_add_room, null)
-        dialog.setContentView(view)
+        val sheetBinding = com.mainstation.app.databinding.DialogAddRoomBinding.inflate(layoutInflater)
+        dialog.setContentView(sheetBinding.root)
 
-        val etName = view.findViewById<android.widget.EditText>(R.id.et_name)
-        val etDesc = view.findViewById<android.widget.EditText>(R.id.et_desc)
-        val etCap = view.findViewById<android.widget.EditText>(R.id.et_capacity)
-        val etPrice = view.findViewById<android.widget.EditText>(R.id.et_price)
+        sheetBinding.etName.setText(room.name)
+        sheetBinding.etDesc.setText(room.description)
+        sheetBinding.etCapacity.setText(room.capacity.toString())
+        sheetBinding.etPrice.setText(room.pricePerHour.toString())
 
-        etName.setText(room.name)
-        etDesc.setText(room.description)
-        etCap.setText(room.capacity.toString())
-        etPrice.setText(room.pricePerHour.toString())
-
-        view.findViewById<View>(R.id.btn_save).setOnClickListener {
-            val name = etName.text.toString()
-            val desc = etDesc.text.toString()
-            val cap = etCap.text.toString().toIntOrNull() ?: 0
-            val price = etPrice.text.toString().toDoubleOrNull()
+        sheetBinding.btnSave.setOnClickListener {
+            val name = sheetBinding.etName.text.toString()
+            val desc = sheetBinding.etDesc.text.toString()
+            val cap = sheetBinding.etCapacity.text.toString().toIntOrNull() ?: 0
+            val price = sheetBinding.etPrice.text.toString().toDoubleOrNull()
 
             if (name.isNotEmpty() && price != null && price >= 0 && cap >= 0) {
                 val updatedRoom = room.copy(name = name, description = desc, capacity = cap, pricePerHour = price)

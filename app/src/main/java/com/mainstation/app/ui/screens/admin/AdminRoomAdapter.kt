@@ -8,31 +8,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mainstation.app.R
 import com.mainstation.app.data.model.Room
 
+import com.mainstation.app.databinding.ItemAdminRoomBinding
+
 class AdminRoomAdapter(
     private var rooms: List<Room>,
     private val onEdit: (Room) -> Unit,
     private val onDelete: (String) -> Unit
 ) : RecyclerView.Adapter<AdminRoomAdapter.RoomViewHolder>() {
 
-    class RoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvName: TextView = itemView.findViewById(R.id.tv_name)
-        val tvDetails: TextView = itemView.findViewById(R.id.tv_details)
-        val btnEdit: View = itemView.findViewById(R.id.btn_edit)
-        val btnDelete: View = itemView.findViewById(R.id.btn_delete)
-    }
+    class RoomViewHolder(val binding: ItemAdminRoomBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoomViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_admin_room, parent, false)
-        return RoomViewHolder(view)
+        val binding = ItemAdminRoomBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return RoomViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RoomViewHolder, position: Int) {
         val room = rooms[position]
-        holder.tvName.text = room.name
-        holder.tvDetails.text = "Cap: ${room.capacity} | ${com.mainstation.app.util.CurrencyUtils.toRupiah(room.pricePerHour)}/hr"
-        holder.btnEdit.setOnClickListener { onEdit(room) }
-        holder.btnDelete.setOnClickListener { onDelete(room.id) }
+        holder.binding.tvName.text = room.name
+        holder.binding.tvDetails.text = "Cap: ${room.capacity} | ${com.mainstation.app.util.CurrencyUtils.toRupiah(room.pricePerHour)}/hr"
+        holder.binding.btnEdit.setOnClickListener { onEdit(room) }
+        holder.binding.btnDelete.setOnClickListener { onDelete(room.id) }
     }
 
     override fun getItemCount() = rooms.size

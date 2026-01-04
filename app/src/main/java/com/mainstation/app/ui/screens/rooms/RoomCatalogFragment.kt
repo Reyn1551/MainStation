@@ -13,30 +13,40 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mainstation.app.R
 import com.mainstation.app.data.model.Room
 import dagger.hilt.android.AndroidEntryPoint
+import com.mainstation.app.databinding.FragmentRoomsBinding
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
+
 class RoomCatalogFragment : Fragment() {
 
     private val viewModel: RoomViewModel by viewModels()
+    
+    private var _binding: FragmentRoomsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_rooms, container, false)
+    ): View {
+        _binding = FragmentRoomsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_rooms)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.rvRooms.layoutManager = LinearLayoutManager(context)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.rooms.collect { rooms ->
-                recyclerView.adapter = RoomAdapter(rooms) { room ->
+                binding.rvRooms.adapter = RoomAdapter(rooms) { room ->
                     val bundle = Bundle().apply {
                         putString("roomId", room.id)
                         putString("itemName", room.name)
