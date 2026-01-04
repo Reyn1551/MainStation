@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "593602703788",
+    "firebase_url": "https://tugas-proyek-pmobile-9269e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "tugas-proyek-pmobile-9269e",
+    "storage_bucket": "tugas-proyek-pmobile-9269e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593602703788:android:17ccb7413498a7ea848a09",
+        "android_client_info": {
+          "package_name": "com.mainstation.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWYaZrxSfi4FNgUWpTN1wZO35UBjDgtlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -44,10 +44,10 @@ class LocationsFragment : Fragment() {
             val sleman = LatLng(-7.7126, 110.3533)
             val gunungKidul = LatLng(-7.9620, 110.6062) // Wonosari area
             
-            googleMap.addMarker(MarkerOptions().position(yogyakarta).title("MainSpace Offline - Yogyakarta"))
-            googleMap.addMarker(MarkerOptions().position(bantul).title("MainSpace Offline - Bantul"))
-            googleMap.addMarker(MarkerOptions().position(sleman).title("MainSpace Offline - Sleman"))
-            googleMap.addMarker(MarkerOptions().position(gunungKidul).title("MainSpace Offline - Gunung Kidul"))
+            googleMap.addMarker(MarkerOptions().position(yogyakarta).title("MainSpace - Yogyakarta"))
+            googleMap.addMarker(MarkerOptions().position(bantul).title("MainSpace - Bantul"))
+            googleMap.addMarker(MarkerOptions().position(sleman).title("MainSpace - Sleman"))
+            googleMap.addMarker(MarkerOptions().position(gunungKidul).title("MainSpace - Gunung Kidul"))
             
             // Move camera to Yogyakarta
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(yogyakarta, 10f))

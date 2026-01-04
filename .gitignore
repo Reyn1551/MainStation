@@ -45,7 +45,7 @@ captures/
 *.hprof
 
 # Google Services (e.g., Google AdMob)
-google-services.json
+
 
 # Android Profiler
 *.hprof
