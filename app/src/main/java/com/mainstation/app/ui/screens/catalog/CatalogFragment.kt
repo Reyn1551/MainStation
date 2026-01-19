@@ -41,7 +41,7 @@ class CatalogFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.rvConsoles.layoutManager = GridLayoutManager(context, 2)
+        binding.rvConsoles.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         
         adapter = ConsoleAdapter(emptyList()) { console ->
             val bundle = Bundle().apply {
@@ -52,13 +52,34 @@ class CatalogFragment : Fragment() {
             findNavController().navigate(R.id.action_catalog_to_booking, bundle)
         }
         binding.rvConsoles.adapter = adapter
-        
+        // Filter Listener
+        // Filter Listener
+        binding.chipGroupFilter.setOnCheckedStateChangeListener { _, checkedIds ->
+            val checkedId = checkedIds.firstOrNull() ?: View.NO_ID
+            val currentConsoles = viewModel.consoles.value 
+            filterAndDisplay(currentConsoles, checkedId)
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
              viewModel.consoles.collect { consoles ->
-                 adapter.updateData(consoles)
+                 // Update when data changes (e.g. from backend)
+                 // Update when data changes (e.g. from backend)
+                 val checkedId = binding.chipGroupFilter.checkedChipId
+                 filterAndDisplay(consoles, checkedId)
              }
         }
     }
+    
+    private fun filterAndDisplay(consoles: List<com.mainstation.app.data.model.Console>, checkedId: Int) {
+         val filtered = when (checkedId) {
+             R.id.chip_ps5 -> consoles.filter { it.type.contains("PS5", ignoreCase = true) }
+             R.id.chip_ps4 -> consoles.filter { it.type.contains("PS4", ignoreCase = true) }
+             R.id.chip_xbox -> consoles.filter { it.type.contains("Xbox", ignoreCase = true) }
+             else -> consoles
+         }
+         adapter.updateData(filtered)
+    }
+    
     
     override fun onResume() {
         super.onResume()

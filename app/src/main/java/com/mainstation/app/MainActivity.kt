@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         
         binding.navView.setupWithNavController(navController)
 
-        // Hide bottom nav on login screen
+       
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.login_fragment, R.id.admin_fragment -> binding.navView.visibility = View.GONE

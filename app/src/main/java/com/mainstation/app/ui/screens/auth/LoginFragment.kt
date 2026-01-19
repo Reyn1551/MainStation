@@ -44,8 +44,15 @@ class LoginFragment : Fragment() {
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString()
+            
+            val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+            
             if (email.isNotEmpty() && password.isNotEmpty()) {
-                viewModel.login(email, password)
+                if (email.matches(emailPattern.toRegex())) {
+                    viewModel.login(email, password)
+                } else {
+                    Toast.makeText(context, "Invalid Email Format", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
             }
@@ -86,7 +93,6 @@ class LoginFragment : Fragment() {
         val sheetBinding = com.mainstation.app.databinding.BottomSheetRegisterBinding.inflate(layoutInflater)
         dialog.setContentView(sheetBinding.root)
         
-        // Transparent background for rounded corners
         (sheetBinding.root.parent as? View)?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         
         sheetBinding.btnRegister.setOnClickListener {

@@ -12,5 +12,4 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-// Firebase providers moved to FirebaseModule
 }

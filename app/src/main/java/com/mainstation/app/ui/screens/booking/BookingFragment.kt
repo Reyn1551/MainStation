@@ -25,7 +25,7 @@ class BookingFragment : Fragment() {
     private var hourlyRate: Double = 50000.0 // Default or passed via args
     private var duration: Int = 2
     private val viewModel: BookingViewModel by viewModels()
-
+//    var hourlyRate: Double = 50000.0
     private var _binding: FragmentBookingBinding? = null
     private val binding get() = _binding!!
 
@@ -59,6 +59,8 @@ class BookingFragment : Fragment() {
         binding.spinnerBranch.adapter = adapter
 
         // Init UI
+        val currencyFormat = java.text.NumberFormat.getIntegerInstance()
+        binding.tvSelectedItemPrice.text = "Rp ${currencyFormat.format(hourlyRate)}/hr"
         updateTotal()
 
         binding.sliderDuration.addOnChangeListener { _, value, _ ->
@@ -67,8 +69,30 @@ class BookingFragment : Fragment() {
             updateTotal()
         }
 
+        // Date Picker
+        binding.etDate.setOnClickListener {
+            val calendar = java.util.Calendar.getInstance()
+            val datePicker = android.app.DatePickerDialog(requireContext(), { _, year, month, day ->
+                val selectedDate = "$year-${month + 1}-$day"
+                binding.etDate.setText(selectedDate)
+            }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH))
+            datePicker.show()
+        }
+
+        // Time Picker
+        binding.etTime.setOnClickListener {
+             val calendar = java.util.Calendar.getInstance()
+             val timePicker = android.app.TimePickerDialog(requireContext(), { _, hour, minute ->
+                 val formattedTime = String.format("%02d:%02d", hour, minute)
+                 binding.etTime.setText(formattedTime)
+             }, calendar.get(java.util.Calendar.HOUR_OF_DAY), calendar.get(java.util.Calendar.MINUTE), true)
+             timePicker.show()
+        }
+
         binding.btnConfirmBooking.setOnClickListener {
             val selectedBranch = binding.spinnerBranch.selectedItem.toString()
+            val date = binding.etDate.text.toString()
+            val time = binding.etTime.text.toString()
             
             // Retrieve IDs
             val selectedRoomId = arguments?.getString("roomId") 
@@ -79,14 +103,20 @@ class BookingFragment : Fragment() {
                 Toast.makeText(context, "Error: No item selected!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            // Validation: Date/Time
+            if (date.isEmpty() || time.isEmpty()) {
+                 Toast.makeText(context, "Please select Date and Time", Toast.LENGTH_SHORT).show()
+                 return@setOnClickListener
+            }
             
             val totalCost = duration * hourlyRate
-            val formattedCost = java.text.NumberFormat.getIntegerInstance().format(totalCost)
+            val formattedCost = currencyFormat.format(totalCost)
 
             // Show Confirmation Dialog
             androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setTitle("Confirm Booking")
-                .setMessage("Are you sure you want to book $itemName for $duration hours?\nTotal: Rp $formattedCost")
+                .setMessage("Booking: $itemName\nDate: $date $time\nDuration: $duration hours\nTotal: Rp $formattedCost")
                 .setPositiveButton("Confirm") { _, _ ->
                      // Debug Toast
                      // Toast.makeText(context, "Booking ID: ${selectedConsoleId ?: selectedRoomId}", Toast.LENGTH_SHORT).show()
@@ -112,7 +142,7 @@ class BookingFragment : Fragment() {
                         .build()
                      findNavController().navigate(R.id.navigation_profile, null, navOptions)
                 } else {
-                     Toast.makeText(context, "Booking Failed", Toast.LENGTH_SHORT).show()
+                     Toast.makeText(context, "Booking Failed: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
