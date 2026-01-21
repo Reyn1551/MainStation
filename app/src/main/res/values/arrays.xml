@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="branch_locations">
+        <item>Main Station - Kota Yogyakarta</item>
+        <item>Main Station - Sleman</item>
+        <item>Main Station - Bantul</item>
+        <item>Main Station - Gunung Kidul</item>
+    </string-array>
+</resources>

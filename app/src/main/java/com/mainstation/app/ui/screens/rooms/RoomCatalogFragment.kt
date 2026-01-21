@@ -9,15 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.mainstation.app.R
-import com.mainstation.app.data.model.Room
 import dagger.hilt.android.AndroidEntryPoint
 import com.mainstation.app.databinding.FragmentRoomsBinding
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-
 class RoomCatalogFragment : Fragment() {
 
     private val viewModel: RoomViewModel by viewModels()
@@ -50,7 +47,7 @@ class RoomCatalogFragment : Fragment() {
                     val bundle = Bundle().apply {
                         putString("roomId", room.id)
                         putString("itemName", room.name)
-                        putDouble("hourlyRate", room.pricePerHour)
+                        putFloat("hourlyRate", room.pricePerHour.toFloat()) // Gunakan putFloat
                     }
                     findNavController().navigate(R.id.action_rooms_to_booking, bundle)
                 }

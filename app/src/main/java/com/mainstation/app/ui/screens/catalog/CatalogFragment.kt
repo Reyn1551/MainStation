@@ -8,8 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.mainstation.app.R
 import dagger.hilt.android.AndroidEntryPoint
 import com.mainstation.app.databinding.FragmentCatalogBinding
@@ -41,31 +40,26 @@ class CatalogFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.rvConsoles.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+        binding.rvConsoles.layoutManager = LinearLayoutManager(context)
         
         adapter = ConsoleAdapter(emptyList()) { console ->
             val bundle = Bundle().apply {
                 putString("consoleId", console.id)
                 putString("itemName", console.name)
-                putDouble("hourlyRate", console.pricePerHour)
+                putFloat("hourlyRate", console.pricePerHour.toFloat()) // Gunakan putFloat
             }
             findNavController().navigate(R.id.action_catalog_to_booking, bundle)
         }
         binding.rvConsoles.adapter = adapter
-        // Filter Listener
-        // Filter Listener
+
         binding.chipGroupFilter.setOnCheckedStateChangeListener { _, checkedIds ->
             val checkedId = checkedIds.firstOrNull() ?: View.NO_ID
-            val currentConsoles = viewModel.consoles.value 
-            filterAndDisplay(currentConsoles, checkedId)
+            filterAndDisplay(viewModel.consoles.value, checkedId)
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
              viewModel.consoles.collect { consoles ->
-                 // Update when data changes (e.g. from backend)
-                 // Update when data changes (e.g. from backend)
-                 val checkedId = binding.chipGroupFilter.checkedChipId
-                 filterAndDisplay(consoles, checkedId)
+                 filterAndDisplay(consoles, binding.chipGroupFilter.checkedChipId)
              }
         }
     }
@@ -79,7 +73,6 @@ class CatalogFragment : Fragment() {
          }
          adapter.updateData(filtered)
     }
-    
     
     override fun onResume() {
         super.onResume()

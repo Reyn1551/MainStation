@@ -46,19 +46,21 @@ class DataSeeder @Inject constructor(
             batch.set(docRef, room)
         }
 
-        // Add Consoles/Catalog items if needed
+        // Add Consoles with STOCK field
         val consoles = listOf(
              hashMapOf(
                 "name" to "PlayStation 5",
                 "type" to "Console",
                 "status" to "Available",
-                "pricePerHour" to 15000.0
+                "pricePerHour" to 15000.0,
+                "stock" to 10 // Added Stock
             ),
              hashMapOf(
                 "name" to "PlayStation 4 Pro",
                 "type" to "Console",
                 "status" to "Available",
-                "pricePerHour" to 10000.0
+                "pricePerHour" to 10000.0,
+                "stock" to 15 // Added Stock
             ) 
         )
         
